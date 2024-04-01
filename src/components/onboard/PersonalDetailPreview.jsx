@@ -17,7 +17,6 @@ const PreviewEmp = ({ setInStep, inStep, step, setStep }) => {
   
   const personalData = useSelector((state) => state.Onboardingpersdetails.personalData);
   const companyData = useSelector((state) => state.Onboardingpersdetails.companyData);
-  const employeId = useSelector((state) => state.Onboardingpersdetails.employeId);
   
   const dispatch = useDispatch()
   
@@ -34,15 +33,14 @@ const PreviewEmp = ({ setInStep, inStep, step, setStep }) => {
   // };
   
   const handleSubmit = async () => {
-    // const orgId = "482d8374-fca3-43ff-a638-02c8a425c492"; // Replace with your actual orgId value
-    console.log("id for the employe",employeId);
+    const orgId = "482d8374-fca3-43ff-a638-02c8a425c492"; // Replace with your actual orgId value
     
     // Combine orgId with companyData
-    // const personalDatawithID = { id:employeId, ...personalData };
+    const combinedData = { orgId, ...companyData };
     
     // Dispatch actions with the modified data
-    dispatch(createUser());
-    dispatch(createCompany(companyData));
+    dispatch(createUser(personalData));
+    dispatch(createCompany(combinedData));
     
     // console.log(combinedData);
   };

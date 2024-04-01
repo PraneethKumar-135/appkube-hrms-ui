@@ -1,11 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    personalDetails: [], 
-    professionalDetails: [], 
-    equipDetails: [], 
-    documentDetails: [], 
-  };
+  personalDetails: [],
+  professionalDetails: [],
+  equipDetails: [],
+  documentDetails: [],
+  id: "",
+  tab: false
+};
 export const formSlice = createSlice({
   name: "Details",
   initialState,
@@ -22,13 +24,22 @@ export const formSlice = createSlice({
     setdocumentDetails: (state, action) => {
       state.documentDetails = { ...state.documentDetails, ...action.payload };
     },
+    setId: (state, action) => {
+      state.id = action.payload
+      console.log("id", action.payload)
+    },
+    setTabs: (state, action) => {
+      state.tab = action.payload
+      console.log("setTab", action.payload)
+    }
   },
 });
 
-export const { setpersonalDetails} = formSlice.actions;
-export const { setprofessionalDetails} = formSlice.actions;
-export const { setequipDetails} = formSlice.actions;
-export const {setdocumentDetails} = formSlice.actions;
-
+export const { setpersonalDetails } = formSlice.actions;
+export const { setprofessionalDetails } = formSlice.actions;
+export const { setequipDetails } = formSlice.actions;
+export const { setdocumentDetails } = formSlice.actions;
+export const { setId } = formSlice.actions;
+export const { setTabs } = formSlice.actions;
 
 export default formSlice.reducer;

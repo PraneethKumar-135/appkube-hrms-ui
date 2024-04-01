@@ -17,7 +17,6 @@ const resetPassword = createSlice({
         setNewPass:(state,action)=>{
             state.newPassword = action.payload
         },
-
     }
 
 })

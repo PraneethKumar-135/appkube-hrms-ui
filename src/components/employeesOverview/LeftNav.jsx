@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Radio, Space, Tabs } from "antd";
 import TopNav from "./TopNav";
 import { IoMdPerson } from "react-icons/io";
@@ -9,14 +9,6 @@ import ProjectIcon from "@/../../public/assets/empDetails/Projects.svg";
 import AllProjects from "./AllProjects";
 
 const LeftNav = () => {
-
-  useEffect(() => {
-    // Accessing location object inside useEffect
-    if (typeof window !== 'undefined') {
-      // Access location object here
-      console.log(window.location.href);
-    }
-  }, []);
   const [tabPosition, setTabPosition] = useState("left");
   const [activeTab, setActiveTab] = useState("1");
 

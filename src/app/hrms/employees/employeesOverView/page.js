@@ -1,14 +1,14 @@
 import LeftNav from '@/components/employeesOverview/LeftNav'
-import TopEmpDt from '@/components/employeesOverview/TopEmpDtl'
+import TopEmpDtl from '@/components/employeesOverview/TopEmpDtl'
 import React from 'react'
 
-const Page = () => {
+const page = () => {
   return (
-    <div >
-        <TopEmpDt/>
+    <div className=''>
+        <TopEmpDtl/>
         <LeftNav/>
     </div>
   )
 }
 
-export default Page
+export default page

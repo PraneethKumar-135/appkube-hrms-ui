@@ -10,9 +10,7 @@ import LoginImage from "../../../public/assets/login/login2.svg";
 import synectiksImage from "../../../public/assets/login/synectiks.svg";
 import welcomeImage from "../../../public/assets/login/hand.jpg";
 import { useRouter } from "next/navigation";
-import { setemployeId } from "@/redux/slices/Onboardingpersdetails";
-
-import { useDispatch } from "react-redux";
+// import { useSelector } from "react-redux";
 
 import axios from "@/api/axios";
 // import unionImage from "../../../public/assets/login/Union.svg";
@@ -22,39 +20,6 @@ const Page = () => {
   const [valid, setValid] = useState(true);
   const [emailVerified, setEmailVerified] = useState(true);
 
-  const dispatch = useDispatch();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-
-  const handleEmailChange = (e) => {
-    const newEmail = e.target.value;
-    setEmail(newEmail);
-    validateForm(newEmail, password);
-  };
-
-  const handlePasswordChange = (e) => {
-    const newPassword = e.target.value;
-    setPassword(newPassword);
-    validateForm(email, newPassword);
-  };
-
-  const validateForm = (newEmail, newPassword) => {
-    // Email pattern for validation
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // Password pattern for validation
-    const passwordPattern =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-    // Check if email and password match the specified patterns
-    const isEmailValid = emailPattern.test(newEmail);
-    const isPasswordValid = passwordPattern.test(newPassword);
-
-    // Enable button only if both email and password are valid
-    setIsButtonDisabled(!(isEmailValid && isPasswordValid));
-  };
-
   // const reset = useSelector((state) => state.resetPassword);
   // console.log(reset);
 
@@ -63,10 +28,6 @@ const Page = () => {
     date.setTime(date.getTime() + expiresInDays * 24 * 60 * 60 * 1000);
     const expires = "expires=" + date.toUTCString();
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
-  };
-
-  const dispatchfun = (id) => {
-    dispatch(setemployeId(id));
   };
 
   const signinCheck = async (values) => {
@@ -82,17 +43,14 @@ const Page = () => {
       console.log("data", data.emp_type);
       const response = await axios.post("/signin", data);
       console.log("response", response);
-
       if (response.status == 200) {
         //getting accesstoken from response
         const accessToken = response.data.AccessToken;
-        console.log("employe Id", response.data.Result.id);
-        dispatchfun(response.data.Result.id);
         // Set the access token in a cookie
         setCookie("accessToken", accessToken, 1);
         if (
-          response.data.Result.first_name == "" ||
-          response.data.Result.number == ""
+          response.data.Result.email == "" ||
+          response.data.Result.work_email == ""
         ) {
           router.push("/onboarding");
         } else {
@@ -105,10 +63,7 @@ const Page = () => {
       console.log("error", error);
       console.log(error.response?.data?.message);
       console.log(error.request.status);
-      if (
-        error.request.status == 403 ||
-        error.response?.data?.message == "User is not confirmed."
-      ) {
+      if (error.request.status == 403) {
         setEmailVerified(false);
         setValid(true);
       } else {
@@ -179,7 +134,6 @@ const Page = () => {
               <Input
                 prefix={<UserOutlined className="site-form-item-icon" />}
                 placeholder="Username"
-                onChange={handleEmailChange}
                 size="large"
               />
             </Form.Item>
@@ -192,26 +146,18 @@ const Page = () => {
                 },
               ]}
             >
-              <Input.Password
+              <Input
                 prefix={<LockOutlined className="site-form-item-icon" />}
                 type="password"
-                onChange={handlePasswordChange}
                 placeholder="Password"
                 size="large"
               />
             </Form.Item>
-            <p
-              style={{ fontSize: "11px" }}
-              className="text-gray-400 -mt-5 mb-3"
-            >
-              Password 8 characters long and include alphanumeric and special
-              characters.
-            </p>
             <Form.Item>
               <div className="flex flex-col gap-1">
                 <div className="flex justify-between">
                   <Form.Item name="remember" valuePropName="checked" noStyle>
-                    <Checkbox disabled>Remember me</Checkbox>
+                    <Checkbox>Remember me</Checkbox>
                   </Form.Item>
 
                   <Link
@@ -235,7 +181,6 @@ const Page = () => {
               <Button
                 type="primary"
                 htmlType="submit"
-                disabled={isButtonDisabled}
                 className="login-form-button bg-blue-500 w-[100%]"
               >
                 Log in

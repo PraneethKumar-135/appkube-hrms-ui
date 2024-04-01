@@ -4,7 +4,7 @@ import React from 'react'
 
 import Documents from '@/components/employees/addemp/documents/Documents'
 
-const Page = () => {
+const page = () => {
   return (
     <div>
 <Documents/>
@@ -13,4 +13,4 @@ const Page = () => {
   )
 }
 
-export default Page
+export default page

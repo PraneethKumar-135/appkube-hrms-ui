@@ -1,5 +1,5 @@
-import Signup from "@/components/signup/Signup";
-const Page = () => {
+import Signup from "@/components/signup/page";
+const page = () => {
   return (
     <div>
       <Signup />
@@ -7,4 +7,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default page;

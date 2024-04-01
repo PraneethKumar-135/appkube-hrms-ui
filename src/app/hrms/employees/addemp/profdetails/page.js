@@ -1,8 +1,8 @@
 import React from 'react'
 
-import ProfessionalInfo from '@/components/employees/addemp/profdetails/Profesional'
+import ProfessionalInfo from '@/components/employees/addemp/profdetails/page'
 
-const Page = () => {
+const page = () => {
   return (
     <div>
      
@@ -13,4 +13,4 @@ const Page = () => {
   )
 }
 
-export default Page
+export default page

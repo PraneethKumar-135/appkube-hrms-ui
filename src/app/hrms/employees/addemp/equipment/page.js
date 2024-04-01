@@ -1,8 +1,7 @@
 import React from 'react'
-// import Equipments from '@/components/employees/addemp/equipment/Equipment'
 import Equipments from '@/components/employees/addemp/equipment/page'
 
-const Page = () => {
+const page = () => {
   return (
     <div>
     
@@ -11,4 +10,4 @@ const Page = () => {
   )
 }
 
-export default Page
+export default page
