@@ -1,16 +1,14 @@
-import Onboardemp from "@/components/employees/addemp/onboardemp/page"
+import React from "react"
+import Onboarding from "@/components/employees/addemp/onboardemp/Onboard"
 
-// import ProfessionalInfo from "@/components/employees/addemp/profdetails/page"
-// import PersonalInformation from "@/components/employees/addemp/persdetails/page"
-const page = () => {
+const Page = () => {
+ 
   return (
     <div>
-        <Onboardemp/>
+        <Onboarding/>
         
-{/* <ProfessionalInfo/> */}
-  {/* <PersonalInformation/> */}
     </div>
   )
 }
 
-export default page
+export default Page

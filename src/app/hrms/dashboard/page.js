@@ -1,19 +1,15 @@
+import React from 'react';
 
-"use client"
-import React from 'react'
-// import Sidebar from '@/components/dashboard/sidebar'
+const Page = () => {
+  // Remove any code that relies on client-side objects or APIs
+  // Ensure data fetching functions are implemented correctly if required
 
-const page = () => {
   return (
     <div>
-
-{/* <Sidebar/> */}
- hello dashboard
-
-
-
+      {/* Add your page content here */}
+      <p>Hello dashboard</p>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;

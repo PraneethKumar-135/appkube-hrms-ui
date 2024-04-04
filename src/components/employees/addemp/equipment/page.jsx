@@ -10,6 +10,7 @@ import { AddEquipment, deleteequipement } from "@/redux/slices/Equipment";
 
 import axios from "@/api/axios";
 import getAccessTokenFromCookie from "@/utils/getAccessToken";
+import moment from "moment";
 
 import Image from "next/image";
 const { TextArea } = Input;
@@ -33,10 +34,12 @@ const Equipments = ({ tab, setTab }) => {
     setOwner(e.target.value)
     setProvideBy(e.target.value);
     console.log(owner)
-
   };
-  const details = useSelector((state) => state.EquipmentDetails);
+  const id = useSelector((state) => state.Details.id)
+  console.log("ID", id)
+  const details = useSelector((state) => state.Equipment);
   const organizationDetails = details.organization
+  console.log(organizationDetails)
 
   const isSupplyDateVisible = () => provideBy === true;
 
@@ -105,44 +108,56 @@ const Equipments = ({ tab, setTab }) => {
   console.log(formState)
 
 
-  const callApi = () => {
-    if (organizationDetails.length > 0) {
-      organizationDetails.forEach(item => {
-        let formattedData = {
-          "owner": item.owner,
-          "device_type_id": 1,
-          "manufacturer": item.Manufacturer,
-          "serial_number": item.SerialNumber,
-          "note": item.Notes,
-          "supply_date": item.Date,
-          "emp_id": "6fc51d98-931a-480d-9ef1-495ae930a340"
+  const callApi = async () => {
+    const dataArray = []; // Initialize an empty array to store data objects
+
+    for (const item of organizationDetails) {
+      let data;
+
+      if (item.owner === true) {
+        data = {
+          owner: item.owner,
+          device_type_id: 1,
+          manufacturer: item.Manufacturer,
+          serial_number: item.SerialNumber,
+          note: item.Notes,
+          supply_date: new Date(item.Date).toISOString(), // Convert date to ISO string
+          emp_id: id
         };
-
-        let jsonData = JSON.stringify(formattedData);
-
-        let config = {
-          method: 'put',
-          maxBodyLength: Infinity,
-          url: 'https://i3mdnxvgrf.execute-api.us-east-1.amazonaws.com/dev/employee/equipmentInfo',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-          },
-          data: jsonData
+      } else {
+        data = {
+          owner: item.owner,
+          device_type_id: 1,
+          manufacturer: item.Manufacturer,
+          serial_number: item.SerialNumber,
+          note: item.Notes,
+          emp_id: id
         };
+      }
 
-        axios.request(config)
-          .then((response) => {
-            console.log(JSON.stringify(response.data));
-            setTab(tab + 1)
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+      dataArray.push(data);
+    }
+
+    console.log("Data Array", dataArray); // Log the array before sending it
+
+    try {
+      const response = await axios.put("/employee/equipmentInfo", dataArray, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
+
+      console.log("success", response.data);
+
+      if (response.status === 200) {
+        setTab(tab + 1);
+      }
+    } catch (error) {
+      console.log("error", error);
     }
   }
+
+
 
   return (
     <div>
@@ -347,68 +362,73 @@ const Equipments = ({ tab, setTab }) => {
         }}
       >
         <div className="">
-          {organizationDetails.map((data, index) => (
-            console.log(data),
-            <div className="flex flex-col gap-5 mt-5" key={index}>
-              {index === index && (
-                <div>
-                  {data.owner === true ? (
-                    <h1 className="text-center font-semibold text-xl">Own by Organization</h1>
-                  ) : (
-                    <h1 className="text-center font-semibold text-xl">Own by Worker</h1>
-                  )}
-                </div>
-              )}
-              <div className="flex gap-5 mt-5"><div className="bg-cyan-400 h-12 w-16 rounded-full">
-                <Image
-                  src="https://www.iconpacks.net/icons/1/free-keyboard-icon-1405-thumb.png"
-                  className="rounded-xl h-6 w-6 ml-2.5 mt-3"
-                  alt="Equipment Icon"
-                  width={100}
-                  height={100}
-                />
-              </div>
-                <div className="w-full">
-                  <h1 className="text-xl">
-                    <b></b>
-                  </h1>
-                  <h4 className="text-gray-400 mt-1.5 flex" id="output1">
-                    Manufacturer Name: <p className="text-black ml-1">{data.Manufacturer}</p>
-                  </h4>
-                  <h4 className="text-gray-400 mt-1.5 flex" id="output2">
-                    Serial number: <p className="text-black ml-1">{data.SerialNumber}</p>
-                  </h4>
-                  {(data.owner === true) && (
-                    <h4 className="text-gray-400 mt-1.5 flex" id="output3">
-                      Supply Date: <p className="text-black ml-1">{data.Date}</p>
-                    </h4>)}
-                  <h4 className="text-gray-400 mt-1.5 flex" id="output4">
-                    Notes: <p className="text-black ml-1">{data.Notes}</p>
-                  </h4>
-                </div>
+          {(organizationDetails) ? (
 
-                <div className="flex gap-4">
-                  <Button
-                    type="editbtn"
-                    className="text-black rounded-none mt-3  h-8 w-24 flex items-center hover:text-blue-600 hover:border-blue-600 border-gray-300 font-semibold text-base"
-                    icon={<EditOutlined />}
-                  >
-                    Edit
-                  </Button>
+            organizationDetails.map((data, index) => (
+              console.log(data),
+              <div className="flex flex-col gap-5 mt-5" key={index}>
+                {index === index && (
+                  <div>
+                    {data.owner === true ? (
+                      <h1 className="text-center font-semibold text-xl">Own by Organization</h1>
+                    ) : (
+                      <h1 className="text-center font-semibold text-xl">Own by Worker</h1>
+                    )}
+                  </div>
+                )}
+                <div className="flex gap-5 mt-5"><div className="bg-cyan-400 h-12 w-16 rounded-full">
+                  <Image
+                    src="https://www.iconpacks.net/icons/1/free-keyboard-icon-1405-thumb.png"
+                    className="rounded-xl h-6 w-6 ml-2.5 mt-3"
+                    alt="Equipment Icon"
+                    width={100}
+                    height={100}
+                  />
+                </div>
+                  <div className="w-full">
+                    <h1 className="text-xl">
+                      <b></b>
+                    </h1>
+                    <h4 className="text-gray-400 mt-1.5 flex" id="output1">
+                      Manufacturer Name: <p className="text-black ml-1">{data.Manufacturer}</p>
+                    </h4>
+                    <h4 className="text-gray-400 mt-1.5 flex" id="output2">
+                      Serial number: <p className="text-black ml-1">{data.SerialNumber}</p>
+                    </h4>
+                    {(data.owner === true) && (
+                      <h4 className="text-gray-400 mt-1.5 flex" id="output3">
+                        Supply Date: <p className="text-black ml-1">{data.Date}</p>
+                      </h4>)}
+                    <h4 className="text-gray-400 mt-1.5 flex" id="output4">
+                      Notes: <p className="text-black ml-1">{data.Notes}</p>
+                    </h4>
+                  </div>
 
-                  <Button
-                    type="danger"
-                    className="text-white rounded-none mt-3 flex items-center bg-red-500 hover:text- hover:border-red-600 border-gray-300 font-semibold h-8 w-24 "
-                    onClick={() => handledelete(data.SerialNumber)}
-                    style={{ background: "rgb(245, 0, 0)", color: "white" }}
-                    icon={<DeleteOutlined />}
-                  >
-                    Delete
-                  </Button>
+                  <div className="flex gap-4">
+                    <Button
+                      type="editbtn"
+                      className="text-black rounded-none mt-3  h-8 w-24 flex items-center hover:text-blue-600 hover:border-blue-600 border-gray-300 font-semibold text-base"
+                      icon={<EditOutlined />}
+                    >
+                      Edit
+                    </Button>
+
+                    <Button
+                      type="danger"
+                      className="text-white rounded-none mt-3 flex items-center bg-red-500 hover:text- hover:border-red-600 border-gray-300 font-semibold h-8 w-24 "
+                      onClick={() => handledelete(data.SerialNumber)}
+                      style={{ background: "rgb(245, 0, 0)", color: "white" }}
+                      icon={<DeleteOutlined />}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <div className="text-black">Loading.....</div>
+          )}
         </div>
       </div>
     </div>

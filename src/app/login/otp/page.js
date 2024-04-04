@@ -10,28 +10,33 @@ import { useDispatch, useSelector } from "react-redux";
 import { setOtp } from "@/redux/slices/resetPasswordSlice";
 import { CiLight } from "react-icons/ci";
 
-const page = () => {
-  useEffect(() => {
-    inputRefs.current[0].current.focus();
-  }, []);
-
+const Page = () => {
   const router = useRouter();
   const [otp, setotp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
   const dispatch = useDispatch();
   const reset = useSelector((state) => state.resetPassword);
+  
 
+  // useEffect(() => {
+  //   // Create refs for each OTP input
+  //   for (let i = 0; i < otp.length; i++) {
+  //     inputRefs.current.push(React.createRef());
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   // Create refs for each OTP input
+  // }, [otp]); // eslint-disable-next-line react-hooks/exhaustive-deps
   for (let i = 0; i < otp.length; i++) {
-    inputRefs.current.push(useRef(null));
+    inputRefs.current.push(React.createRef());
   }
+  
 
   const handleInputChange = (index, value) => {
-    console.log(value);
     const newOtp = [...otp];
     newOtp[index] = value;
-    console.log(newOtp);
     setotp(newOtp);
-    console.log(otp);
 
     // Focus on the next input if the current one is full and not the last
     if (value.length === 1 && index < otp.length - 1) {
@@ -57,7 +62,7 @@ const page = () => {
     // Clear the input value when it is focused
     const newOtp = [...otp];
     newOtp[index] = "";
-    setOtp(newOtp);
+    setotp(newOtp);
   };
 
   return (
@@ -88,23 +93,8 @@ const page = () => {
             <br />
             {reset.email}
           </p>
-          {/* <input type='text' placeholder='Enter Email  Address'/><br/> */}
-          {/* <Form form={form} name="horizontal_login" layout="inline" onFinish={onFinish}> */}
           <div className="flex flex-col gap-3">
             <div className="flex gap-3 w-[250px] ">
-              {/* {fields.map((field, index) => (
-                <Input
-                  key={index}
-                  ref={(el) => (inputRefs.current[index] = el)}
-                  placeholder="0"
-                  className="w-[3vw] my-5 text-center"
-                  size="large"
-                  value={field}
-                  // type="number"
-                  maxLength={1}
-                  onChange={(event) => handleChange(index, event)}
-                />
-              ))} */}
               {otp.map((value, index) => (
                 <Input
                   key={index}
@@ -112,48 +102,25 @@ const page = () => {
                   className="w-[3vw] my-5 text-center"
                   size="large"
                   value={otp[index]}
-                  // style={}
                   maxLength={1}
                   onChange={(e) => handleInputChange(index, e.target.value)}
-                  // onFocus={() => handleFocus(index)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
                   ref={inputRefs.current[index]} // Assign ref to each input
                 />
               ))}
-              {/* <Input
-                placeholder="0"
-                className="w-[3vw] my-5 text-center"
-                size="large"
-                maxLength={1}
-              />
-              <Input
-                placeholder="0"
-                className="w-[3vw] my-5 text-center"
-                size="large"
-                maxLength={1}
-              />
-              <Input
-                placeholder="0"
-                className="w-[3vw] my-5 text-center"
-                size="large"
-                maxLength={1}
-              /> */}
             </div>
-
             <button
               className="w-[200px] ml-7 bg-blue-500 rounded-sm text-white text-base p-1 cursor-pointer"
               onClick={() => {
-                console.log(otp);
                 if (otp.some((item) => item === "" || item === undefined)) {
                   alert("Invalid Otp");
                 } else {
                   dispatch(setOtp(otp.join("")));
-                  console.log(reset);
                   router.push("/login/new-password");
                 }
               }}
             >
-              verify
+              Verify
             </button>
           </div>
         </div>
@@ -162,4 +129,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

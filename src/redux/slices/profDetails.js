@@ -12,18 +12,23 @@ export const slice = createSlice({
   initialState:initialState,
   reducers: {
     updateProfessionalDetails: (state, action) => {
+      console.log(action.payload)
       return { ...state, ...action.payload };
     },
     setDropdownOption: (state, action) => {
+      console.log(action.payload)
       state.selectedDepartment = action.payload;
     },
     setDropdownOptionDesig: (state, action) => {
+      console.log(action.payload)
       state.selectedDesignation = action.payload;
     },
     setDropdownOptionReport: (state, action) => {
+      console.log(action.payload)
       state.selectedReportingMngr = action.payload;
     },
     setDropdownOptionwork: (state, action) => {
+      console.log(action.payload)
       state.selectedworkLocation = action.payload;
     },
     setSelectedDate: (state, action) => {

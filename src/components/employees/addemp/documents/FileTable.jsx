@@ -127,16 +127,20 @@ const FileTable = () => {
           key="Dateuploaded"
         />
         <Column title="Uploaded by" dataIndex="Uploadedby" key="Uploadedby" />
-        <Column
-          title=""
-          key="action"
-          render={(_, record) => (
-            <Button type="danger" icon={<AiFillDelete />} style={{ color: "white", background: "#FF4D4F", display: "flex", alignItems: "center" }} >
-              Delete
-            </Button>
-          )}
-        />
       </ColumnGroup>
+
+      <Column
+        title=""
+        key="action"
+        render={(_, record) => (
+          <Space size="middle">
+            <button className="flex items-center gap-2 justify-between border bg-[#FF4D4F] text-white hover:text-[#FF4D4F] hover:bg-white hover:border-[#FF4D4F]       rounded-sm  py-2  px-4 group">
+              <AiFillDelete className=""/>
+              <span>Delete</span>
+            </button>
+          </Space>
+        )}
+      />
     </Table>
   );
 };

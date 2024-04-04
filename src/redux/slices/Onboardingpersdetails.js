@@ -1,34 +1,42 @@
 
-
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from '@/api/axios';
 import getAccessTokenFromCookie from '@/utils/getAccessToken';
 
 const accessToken = getAccessTokenFromCookie();
-export const createUser = createAsyncThunk('createUser', async (data, { rejectWithValue }) => {
+export const createUser = createAsyncThunk('createUser', async (data, {getState, rejectWithValue }) => {
 
   try {
-    const response = await axios.post('/employee/personalInfo', data,{
+      // Access the current state
+      const state = getState();
+      // Extract the employeId from the state
+      const employeId = state.Onboardingpersdetails.employeId;
+      const employePersonalData = state.Onboardingpersdetails.personalData;
+      console.log("the employePersonalData",employePersonalData);
+
+      console.log("employeId",employeId);
+
+    const response = await axios.put(`/employee/${employeId}`, employePersonalData,{
     headers: {
       'Authorization': `Bearer ${accessToken}`
     }
   });
     
-    console.log(response);
-    // return response.data; 
-    const hrDetails = await axios.get(`/employee/${response.data.id}`, {
-      params: { userId: response.data.id },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    console.log("hr data",hrDetails.data);
+    console.log("personal",response);
+    return response.data; 
+    // const hrDetails = await axios.get(`/employee/${response.data.id}`, {
+    //   params: { userId: response.data.id },
+    //   headers: {
+    //     Authorization: `Bearer ${accessToken}`,
+    //   },
+    // });
+    // console.log("hr data",hrDetails.data);
 
-    return hrDetails.data
+    // return hrDetails.data
 
 
   } catch (error) {
-    console.log("error",error);
+    console.log("error personal",error);
     console.log("error of the axios",error.message);
     
     return rejectWithValue(error.message);
@@ -39,7 +47,7 @@ export const createUser = createAsyncThunk('createUser', async (data, { rejectWi
 
 export const createCompany = createAsyncThunk('createCompany', async (data, { rejectWithValue }) => {
   try {
-    const response = await axios.put('https://bwppdwpoab.execute-api.us-east-1.amazonaws.com/dev/organization', data,{
+    const response = await axios.put('/organization', data,{
     headers: {
       'Authorization': `Bearer ${accessToken}`
     }
@@ -49,8 +57,8 @@ export const createCompany = createAsyncThunk('createCompany', async (data, { re
     // return response.data; 
 
   } catch (error) {
-    console.log("error",error);
-    console.log("error of the axios",error.message);
+    console.log("error company",error);
+    console.log("error of the axios company",error.message);
     
     // return rejectWithValue(error.message);
 
@@ -74,6 +82,7 @@ export const Onboardingpersdetails = createSlice({
   initialState: {
     personalData:{},
     companyData:{},
+    employeId:null,
     OnboardingData:null,
     loading: false,
     error: null,
@@ -84,6 +93,9 @@ export const Onboardingpersdetails = createSlice({
     },
     setCompanyData:(state,action) => {
       state.companyData = action.payload
+    },
+    setemployeId:(state,action) => {
+      state.employeId = action.payload
     }
 
   },
@@ -108,5 +120,5 @@ export const Onboardingpersdetails = createSlice({
   },
 });
 
-export const { setPersonalData, setCompanyData } = Onboardingpersdetails.actions;
+export const { setPersonalData, setCompanyData, setemployeId } = Onboardingpersdetails.actions;
 export default Onboardingpersdetails.reducer;

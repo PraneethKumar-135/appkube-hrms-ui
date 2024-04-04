@@ -12,7 +12,7 @@ import axios from "@/api/axios";
 import forgotImage from "@/../../public/assets/login/forgot/forgot.svg";
 import { CiLight } from "react-icons/ci";
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const [email, setemail] = useState("");
   const dispatch = useDispatch();
@@ -81,7 +81,7 @@ const page = () => {
                 console.log(reset);
                 dispatch(setEmail(email));
                 try {
-                  const response = await axios.post("/forgotpassword", {
+                  const response = await axios.post("/forgotPassword", {
                     email: email,
                   });
                   console.log(response);
@@ -103,4 +103,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

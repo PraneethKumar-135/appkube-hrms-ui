@@ -7,7 +7,7 @@ import axios from "@/api/axios"
 import getAccessTokenFromCookie from "@/utils/getAccessToken";
 
   const { Search } = Input;
-  const { Option } = Select;
+  //const { Option } = Select;
 
   const App = () => {
 
@@ -24,26 +24,28 @@ import getAccessTokenFromCookie from "@/utils/getAccessToken";
 
    const accessToken = getAccessTokenFromCookie();
 
-    const fetchData = async ()=>{
-      try{
-        console.log('fetching')
+   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log('fetching');
         const response = await axios.get("/employee/tracker", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        console.log('tracker data',response)
-        setData(response.data.employees)
+        console.log('tracker data', response);
+        setData(response.data.employees);
+      } catch (error) {
+        console.log('error of tracker', error);
       }
-      catch(error){
-        console.log('error of tracker',error)
-      }
-
-    }
-    useEffect(()=>{
-      fetchData();
-      console.log('in use effect')
-    },[])
+    };
+  
+    fetchData(); // Call fetchData here
+  
+    console.log('in use effect');
+  }, [accessToken, setData]); // Include dependencies accessToken and setData
+  
+  
 
 
 
@@ -272,7 +274,7 @@ const columns = [
 //   },
 //   ];
 
-const pageSizeOptions = [10, 20, 30, 40, 50];
+//const pageSizeOptions = [10, 20, 30, 40, 50];
 
 const filteredData = datas.filter((item) => {
   const statusMatch = !selectedStatus || item.employee_status.includes(selectedStatus);
@@ -287,6 +289,7 @@ const filteredData = datas.filter((item) => {
 const startIdx = (currentPage - 1) * pageSize;
 const endIdx = currentPage * pageSize;
 const displayedData = filteredData.slice(startIdx, endIdx);
+
 const statusMenu = (
   <Menu onClick={({ key }) => (key === 'All' ? handleAllClick() : handleStatusChange(key))}>
     <Menu.Item key="All">All</Menu.Item>
@@ -330,7 +333,8 @@ return (
             {selectedStatus || 'All'} <DownOutlined />
           </a>
         </Dropdown>
-        <Button type="primary" className='bg-blue-600 rounded-none' onClick={handleSendReminderClick}>Send Reminder</Button>
+        <Button type="primary" className="bg-[#1890FF] hover:text-[#1890FF] border hover:bg-white hover:border-[#1890FF] text-white flex p-4 gap-3 justify-center items-center ml-4 rounded-none"
+               onClick={handleSendReminderClick}>Send Reminder</Button>
       </div>
     </div>
     <Table columns={columns} dataSource={displayedData} pagination={false} />
@@ -351,11 +355,11 @@ return (
 </div>
 </div>
 
-<div className='border border-gray-200 p-4'>
+<div className='border border-gray-200 p-4 w-11/12 ml-7 border-b-0'>
   <p className='text-lg font-semibold'>This Employee has not yet been invited to the application</p>
 </div>
 
-<div className='border border-gray-200 p-4'>
+<div className='border border-gray-200 p-4 w-11/12 ml-7'>
   {selectedEmployee.employee_name} can sign up and complete onboarding after receiving the invite.
   <div className='mt-4'>
     <button className='bg-red-500 text-white h-8 w-32'>End Agreement</button>
@@ -364,24 +368,24 @@ return (
 
 <div>
 
-<div className='flex gap-6 h-20'>
-  <div className=' w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-300'>First Name</h2></div>
-  <div className='w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-300'>Last Name</h2></div>
+<div className='flex gap-6 h-16 mt-8'>
+  <div className=' w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-400'>First Name</h2></div>
+  <div className='w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-400'>Last Name</h2></div>
 </div>
 
-<div className='flex gap-6 h-20'>
-  <div className=' w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-300'>Date of Birth</h2></div>
-  <div className='w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-300'>Gender</h2></div>
+<div className='flex gap-6 h-16'>
+  <div className=' w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-400'>Date of Birth</h2></div>
+  <div className='w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-400'>Gender</h2></div>
 </div>
 
-<div className='flex gap-6 h-20'>
-  <div className=' w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-300'>Contact No.</h2></div>
-  <div className='w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-300'>Email</h2></div>
+<div className='flex gap-6 h-16'>
+  <div className=' w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-400'>Contact No.</h2></div>
+  <div className='w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-400'>Email</h2></div>
 </div>
 
-<div className='flex gap-6 h-20'>
-  <div className=' w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-300'>Emergency Contact Number</h2></div>
-  <div className='w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-300'>Qualification</h2></div>
+<div className='flex gap-6 h-16'>
+  <div className=' w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-400'>Emergency Contact Number</h2></div>
+  <div className='w-full h-full border-b border-slate-200'><h2 className='font-normal text-base text-slate-400'>Qualification</h2></div>
 </div>
 
 </div>
@@ -395,10 +399,9 @@ return (
         // total={filteredData.length}
         total={100}
         current={currentPage}
-        pageSize={pageSize}
-        showTotal={(total) => `Total ${total} items`}
+        //showTotal={(total) => `Total ${total} items`}
         onChange={handlePageChange}
-        // showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
+        showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
       />
     </div>
   </div>

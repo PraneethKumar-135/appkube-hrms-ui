@@ -11,7 +11,7 @@ import forgotImage from "@/../../public/assets/login/forgot/forgot.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { setNewPass } from "@/redux/slices/resetPasswordSlice";
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const [valid, setValid] = useState(true);
   const [passMatch, setPassMatch] = useState();
@@ -218,4 +218,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

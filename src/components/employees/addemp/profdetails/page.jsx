@@ -1,7 +1,7 @@
 "use client";
 
 // ProfessionalForm.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Form, Input, Button, Select, Col, Row, DatePicker, Space } from "antd";
@@ -9,7 +9,9 @@ import { useForm } from "antd/lib/form/Form";
 
 import { useRouter } from "next/navigation";
 import axios from "@/api/axios";
+import axiosW from "@/api/workflow";
 import getAccessTokenFromCookie from "@/utils/getAccessToken";
+
 
 import {
   updateProfessionalDetails,
@@ -24,24 +26,36 @@ import {
 const numberRegex = /^[0-9]{5,}$/; // Ensure at least 5 digits
 
 const ProfessionalInfo = ({ tab, setTab }) => {
+  const id = useSelector((state) => state.Details.id)
+  const selectedDate = useSelector((state) => state.selectedDate);
+  const [designationOptions, setDesignationOptions] = useState([]);
+  const [selectedDesignations, setSelectedDesignations] = useState("");
+  const [departmentData, setDepartmentData] = useState([]);
+  const [selectedDepartments, setSelectedDepartments] = useState("");
+
+
   const handleSelectChange = (value) => {
+    console.log(value)
     dispatch(setDropdownOption(value));
+    setSelectedDepartments(value)
   };
   const handlework = (value) => {
     dispatch(setDropdownOptionwork(value));
   };
   const handleDesig = (value) => {
+    console.log("value", value)
     dispatch(setDropdownOptionDesig(value));
+    setSelectedDesignations(value);
   };
   const handlReportk = (value) => {
     dispatch(setDropdownOptionReport(value));
   };
   const handleDateChange = (date, dateString) => {
-    // Dispatch the action to update the selectedDate in the Redux store
     dispatch(setSelectedDate(dateString));
   };
   const dispatch = useDispatch();
   const professionalDetails = useSelector(selectProfessionalDetails);
+  console.log(professionalDetails)
   const [form] = useForm();
 
   const handleChange = (name, value) => {
@@ -50,7 +64,7 @@ const ProfessionalInfo = ({ tab, setTab }) => {
   };
 
   const handleSubmit = () => {
-    dispatch(updateProfessionalDetails(professionalDetails));
+
     console.log(professionalDetails);
     putting(professionalDetails);
   };
@@ -58,32 +72,32 @@ const ProfessionalInfo = ({ tab, setTab }) => {
   const prof1 = ["option1", "option2", "option3"];
   const prof = ["option1", "option2", "option3"];
 
-
-   const accessToken = getAccessTokenFromCookie();
+  const accessToken = getAccessTokenFromCookie();
 
   const putting = async (values) => {
     let data = {
       // designation_id: values.selectedDesignation,
-      designation_id: 4,
+      designation_id: values.selectedDesignation,
       pf: values.pfNumber,
       uan: values.uanNumber,
-      // department_id: values.selectedDepartment,
       department_id: 5,
       // reporting_manager_id: values.selectedReportingMngr,
       reporting_manager_id: "61a6b732-1597-444a-afcc-10eeafbacc63",
       work_location: values.selectedworkLocation,
       start_date: values.selectedDate,
-      emp_id: values.employeeId,
+      emp_id: id,
     };
+    console.log(data)
 
     try {
-      console.log("stored data", data);
-      const response = await axios.put("/employee/professionalInfo", data,{
-    headers: {
-      'Authorization': `Bearer ${accessToken}`
-    }
-  });
+      console.log("stored data", JSON.stringify(data));
+      const response = await axios.put("/employee/professionalInfo", data, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
       console.log("success", response);
+      setTab(tab + 1)
     } catch (error) {
       console.log("error", error);
     }
@@ -97,7 +111,75 @@ const ProfessionalInfo = ({ tab, setTab }) => {
   const selectedworkLocation = useSelector(
     (state) => state.selectedworkLocation
   );
-  const selectedDate = useSelector((state) => state.selectedDate);
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "https://i3mdnxvgrf.execute-api.us-east-1.amazonaws.com/dev/designation",
+          {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setDesignationOptions(response.data); // Set fetched data to state
+
+      } catch (error) {
+        console.error("Error fetching designation data:", error);
+      }
+    };
+
+    fetchData(); // Call fetchData function
+  }, [accessToken]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      let config = {
+        method: 'get',
+        maxBodyLength: Infinity,
+        url: 'https://i3mdnxvgrf.execute-api.us-east-1.amazonaws.com/dev/department',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        }
+      };
+
+      try {
+        const response = await axios.request(config);
+        setDepartmentData(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+
+  }, [accessToken]);
+
+  const [projectManager, setprojectManager] = useState([])
+
+  useEffect(() => {
+    // Fetch data when the component mounts
+    const fetchData = async () => {
+      try {
+        const response = await axiosW.get("/get_resource_by_role", {
+          params: {
+            designation: "Project Manager",
+          },
+        });
+        console.log(response.data);
+        const data = response.data;
+        setprojectManager(data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+  console.log(projectManager)
 
   return (
     <div>
@@ -132,22 +214,27 @@ const ProfessionalInfo = ({ tab, setTab }) => {
               showSearch
               className="rounded-none"
               onChange={handleDesig}
-              value={selectedDesignation}
+              value={setSelectedDesignations}
               placeholder="Select Designation"
               optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
+            // filterOption={(input, option) =>
+            //   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            // }
             >
-              {prof1.map((option) => (
-                <Select.Option
-                  key={option}
-                  value={option}
-                  className="rounded-none"
-                >
-                  {option}
-                </Select.Option>
-              ))}
+              {designationOptions.map(
+                (
+                  option // Map over fetched options
+                ) => (
+                  <Select.Option
+                    key={option.id} // Assuming each option has a unique id
+                    value={option.id} // Use the designation property as the option value
+                    className="rounded-none"
+
+                  >
+                    {option.designation} {/* Render the designation property */}
+                  </Select.Option>
+                )
+              )}
             </Select>
           </Form.Item>
         </Col>
@@ -231,16 +318,20 @@ const ProfessionalInfo = ({ tab, setTab }) => {
               style={{ borderRadius: 0 }}
               className="rounded-none"
               onChange={handleSelectChange}
-              value={selectedDepartment}
+              value={setSelectedDepartments}
               placeholder="Select Department "
               optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
+            // filterOption={(input, option) =>
+            //   option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            // }
             >
               {prof.map((option) => (
-                <Select.Option key={option} value={option}>
-                  {option}
+                <Select.Option
+                  key={option.id} // Assuming each option has a unique id
+                  value={option.id} // Use the designation property as the option value
+                  className="rounded-none"
+                >
+                  {option.department}
                 </Select.Option>
               ))}
             </Select>
@@ -267,9 +358,9 @@ const ProfessionalInfo = ({ tab, setTab }) => {
                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
-              {prof.map((option) => (
-                <Select.Option key={option} value={option}>
-                  {option}
+              {projectManager.map((option) => (
+                <Select.Option key={option} value={option.emp_id}>
+                  {option.resource_name}
                 </Select.Option>
               ))}
             </Select>
@@ -278,29 +369,21 @@ const ProfessionalInfo = ({ tab, setTab }) => {
         <Col span="3xl">
           <Form.Item
             label="Work Location"
-            name="workLocation"
+            name="WorkLocation"
             rules={[
-              { required: true, message: "Please select a work location." },
+              { message: "Enter Your Work Location" },
+              {
+                // pattern: numberRegex,
+                message: "Please enter Work Location.",
+              },
             ]}
           >
-            <Select
-              showSearch
-              style={{ borderRadius: 0 }}
-              className="rounded-none"
-              onChange={handlework}
-              value={selectedworkLocation}
-              placeholder=" Select Work Location "
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {prof.map((option) => (
-                <Select.Option key={option} value={option}>
-                  {option}
-                </Select.Option>
-              ))}
-            </Select>
+            <Input
+              placeholder="Enter Your Work Location"
+              type="text"
+              value={professionalDetails.WorkLocation}
+              onChange={(e) => handlework("WorkLocation", e.target.value)}
+            />
           </Form.Item>
         </Col>
         <Col span="3xl">
@@ -349,7 +432,8 @@ const ProfessionalInfo = ({ tab, setTab }) => {
                 marginLeft: "40%",
               }}
               onClick={() => {
-                setTab(tab + 1);
+                dispatch(updateProfessionalDetails(professionalDetails));
+                putting(professionalDetails)
               }}
             >
               Next

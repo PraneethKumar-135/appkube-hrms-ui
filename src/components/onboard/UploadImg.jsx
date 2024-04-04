@@ -1,13 +1,19 @@
-"use client"
 import React, { useState } from 'react';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { message, Upload } from 'antd';
 import Image from 'next/image';
+import axios from 'axios'; 
+import {useDispatch} from "react-redux"
+// import { setPersonalData } from '@/redux/slices/Onboardingpersdetails';
+// import { setonboardingImg } from '@/redux/slices/Onboardingpersdetails';
+
+
 const getBase64 = (img, callback) => {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 };
+
 const beforeUpload = (file) => {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
   if (!isJpgOrPng) {
@@ -15,26 +21,50 @@ const beforeUpload = (file) => {
   }
   const isLt2M = file.size / 1024 / 1024 < 2;
   if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
+    message.error('Image must be smaller than 2MB!');
   }
   return isJpgOrPng && isLt2M;
 };
+
 const App = () => {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState();
-  const handleChange = (info) => {
+
+  const dispatch = useDispatch()
+
+
+  const handleChange = async (info) => {
     if (info.file.status === 'uploading') {
       setLoading(true);
       return;
     }
     if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj, (url) => {
+      // Get base64 representation of the image
+      getBase64(info.file.originFileObj, async (url) => {
         setLoading(false);
         setImageUrl(url);
+        // Upload the image to the server
+        try {
+          const response = await axios.post(
+            'https://i3mdnxvgrf.execute-api.us-east-1.amazonaws.com/dev/docUpload',
+            { fileName: info.file.name, data: url }
+          );
+          console.log(response.data);
+          alert('Image uploaded successfully!');
+          // dispatch(setPersonalData(response.data.link))
+          // console.log(response.data.link,"this is for image url");
+           
+          // dispatch(uploadData(response.data.link ));
+          // console.log(dispatch(setonboardingImg({image:response.data.link} )));
+
+        } catch (error) {
+          console.error(error);
+          alert('Error uploading image. Please try again.');
+        }
       });
     }
   };
+
   const uploadButton = (
     <button
       style={{
@@ -47,39 +77,29 @@ const App = () => {
       <div
         style={{
           marginTop: 6,
-          
         }}
       >
         Upload
       </div>
     </button>
   );
+
   return (
-    <div className='scale-[60%] '>
+    <div className='scale-[60%]'>
       <Upload
-      
         name="avatar"
         listType="picture-circle"
-        // size='small'
-        
         className="avatar-uploader w-10"
         showUploadList={false}
-        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
         beforeUpload={beforeUpload}
         onChange={handleChange}
-        // style={{ width:"10px", height:"10px" }}
-       
-        
-        
       >
         {imageUrl ? (
           <Image
-          
             src={imageUrl}
             alt="avatar"
-            // style={{ width: "10%", height: "10%" }}
-           
-            
+            width={100}
+            height={100}
           />
         ) : (
           uploadButton
@@ -88,4 +108,5 @@ const App = () => {
     </div>
   );
 };
+
 export default App;

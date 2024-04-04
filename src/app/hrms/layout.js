@@ -18,19 +18,20 @@ import {
   UserOutlined,
   HighlightOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu } from "antd";
+import { Layout, Modal, Dropdown, Menu, Input } from "antd";
+const { Item } = Menu;
 import React, { useState } from "react";
 import Link from "next/link";
 import getAccessTokenFromCookie from "@/utils/getAccessToken";
 import axios from "@/api/axios";
 import { useRouter } from "next/navigation";
+import { removeAccessToken } from "@/utils/getAccessToken";
 // import { relative } from "path";
 
 import { Provider } from "react-redux";
 import { store } from "@/redux/store/store";
 
 // import { AudioOutlined } from "@ant-design/icons";
-import { Input } from "antd";
 const { Search } = Input;
 
 import Image from "next/image";
@@ -43,6 +44,8 @@ import Image from "next/image";
 import Account from "../../../public/assets/homeicons/Setting.svg";
 import Vector2 from "../../../public/assets/homeicons/Vector2.svg";
 import Bell from "../../../public/assets/homeicons/Bell.svg";
+
+import { useSelector } from "react-redux";
 
 // import Onboardemp from "@/components/employees/addemp/onboardemp/page";
 
@@ -77,6 +80,23 @@ export default function RootLayout({ children }) {
   const router = useRouter();
   const onSearch = (value) => console.log(value);
 
+  const handleLogout = () => {
+    // Clear cookie or local storage here
+    removeAccessToken();
+    // Navigate to login page
+    router.push("/");
+  };
+
+  const menu = (
+    <Menu>
+      <Item key="logout" onClick={handleLogout}>
+        Logout
+      </Item>
+    </Menu>
+  );
+
+  const onBoarded = useSelector((state) => state.Onboardingpersdetails);
+
   const accessToken = getAccessTokenFromCookie();
 
   const fetchData = async () => {
@@ -106,7 +126,7 @@ export default function RootLayout({ children }) {
 
   const items = [
     getItem(<Link href={"/hrms"}>Dashboard</Link>, "1", <DashboardOutlined />),
-    getItem(<Link href={"/projects"}>Project</Link>, "2", <FormOutlined />),
+    getItem(<Link href={"/hrms/projects"}>Project</Link>, "2", <FormOutlined />),
     getItem(
       <Link href={"/hrms/employees"}>Employees</Link>,
       "3",
@@ -129,57 +149,72 @@ export default function RootLayout({ children }) {
     color: "#fff",
     backgroundColor: "#fff",
   };
-  if (accessToken && fetchData()) {
-    return (
-      <html lang="en">
-        <body>
-          <Provider store={store}>
-            <Header
-              style={{
-                position: "sticky",
-                top: 0,
-                zIndex: 1,
-                width: "100%",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                alignContent: "center",
-              }}
-            >
-              {/* <div className="logo" /> */}
-              {/* <Menu
+  // if (accessToken && fetchData()) {
+  //   if (onBoarded.OnboardingData) {
+  return (
+    <html lang="en">
+      <body>
+        <Provider store={store}>
+          <Header
+            style={{
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+              width: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              alignContent: "center",
+            }}
+          >
+            {/* <div className="logo" /> */}
+            {/* <Menu
         theme="dark"
         // mode="horizontal"
         // defaultSelectedKeys={['2']}
         // items={new Array(3).fill(null).map((_, index) => ({
         //   key: String(index + 1),
-        //   label: `nav ${index + 1}`,
+        //   label: nav ${index + 1},
         // }))}
       /> */}
-              <div>
-                <h2 className="text-white uppercase">Synectiks</h2>
-              </div>
+            <div>
+              <h2 className="text-white uppercase">Synectiks</h2>
+            </div>
 
-              <div className="flex">
-                <div className="flex justify-center items-center bg-white border rounded-md">
-                  <Search
-                    placeholder="input search text"
-                    onSearch={onSearch}
-                    style={{
-                      width: 200,
-                      borderRadius: 9,
-                    }}
-                  />
-                </div>
-                <div className="flex w-full gap-4 justify-evenly px-4">
-                  <Image src={Vector2} alt="vector" />
-                  <Image className="text-white" src={Bell} alt="bell" />
-                  <Image src={Account} alt="account" />
-                </div>
+            <div className="flex">
+              <div className="flex justify-center items-center bg-white border rounded-md">
+                <Search
+                  placeholder="input search text"
+                  onSearch={onSearch}
+                  style={{
+                    width: 200,
+                    borderRadius: 9,
+                  }}
+                />
               </div>
-            </Header>
+              <div className="flex w-full gap-4 justify-evenly px-4">
+                <Image src={Vector2} alt="vector" />
+                <Image className="text-white" src={Bell} alt="bell" />
+                <Dropdown
+                  overlay={menu}
+                  placement="bottomRight"
+                  arrow={{ pointAtCenter: true }}
+                  trigger={["click"]}
+                >
+                  <button>
+                    <div>
+                      <Image src={Account} alt="account" />
 
-            {/* <Layout hasSider>
+                    </div>
+                  </button>
+                </Dropdown>
+
+
+              </div>
+            </div>
+          </Header>
+
+          {/* <Layout hasSider>
             <Sider
               style={{
                 overflow: "auto",
@@ -196,10 +231,10 @@ export default function RootLayout({ children }) {
               collapsible
               collapsed={collapsed}
             > */}
-            {/* <div className="logo" /> */}
-            {/* <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']} items={items} /> */}
+          {/* <div className="logo" /> */}
+          {/* <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']} items={items} /> */}
 
-            {/* <div className="container flex flex-col justify-center items-center text-black">
+          {/* <div className="container flex flex-col justify-center items-center text-black">
                 <Link
                   href={"/hrms"}
                   className="text-black w-full py-3 hover:bg-cyan-50 px-2 flex justify-between items-start"
@@ -284,31 +319,31 @@ export default function RootLayout({ children }) {
               </Content>
             </Layout>
           </Layout> */}
-            <Layout style={{ minHeight: "100vh" }}>
-              <Sider
-                // style={siderStyle}
-                collapsible
-                collapsed={collapsed}
-                onCollapse={(value) => setCollapsed(value)}
-                style={{
-                  overflow: "auto",
-                  height: "100vh",
-                  position: "fixed",
-                  marginTop: "10vh",
-                  left: 0,
-                  top: 0,
-                  bottom: 0,
-                }}
+          <Layout style={{ minHeight: "100vh" }}>
+            <Sider
+              // style={siderStyle}
+              collapsible
+              collapsed={collapsed}
+              onCollapse={(value) => setCollapsed(value)}
+              style={{
+                overflow: "auto",
+                height: "100vh",
+                position: "fixed",
+                marginTop: "10vh",
+                left: 0,
+                top: 0,
+                bottom: 0,
+              }}
+            >
+              <div />
+              <Menu
+                theme="light"
+                defaultSelectedKeys={["1"]}
+                mode="inline"
+                style={{ height: "100%" }}
+                items={items}
               >
-                <div />
-                <Menu
-                  theme="light"
-                  defaultSelectedKeys={["1"]}
-                  mode="inline"
-                  style={{ height: "100%" }}
-                  items={items}
-                >
-                  {/* <Menu.Item key="1" icon={<DashboardOutlined />}>
+                {/* <Menu.Item key="1" icon={<DashboardOutlined />}>
               <Link href="/dashboard">
                 <a>Dashboard</a>
               </Link>
@@ -333,55 +368,60 @@ export default function RootLayout({ children }) {
                 <a>Compliance</a>
               </Link>
             </Menu.Item> */}
-                </Menu>
-              </Sider>
-              <Layout className="site-layout flex flex-col">
-                <Content
-                  style={{
-                    // margin: '24px 16px 0',
+              </Menu>
+            </Sider>
+            <Layout className="site-layout flex flex-col">
+              <Content
+                style={{
+                  // margin: '24px 16px 0',
 
-                    // overflow: 'initial',
+                  // overflow: 'initial',
 
-                    // display:"flex",
-                    // flexDirection:"column"
-                    paddingLeft: 10,
-                  }}
-                >
-                  <div
-                    className={`${collapsed ? "ml-[80px]" : "ml-[200px]"}`}
-                    // {collapsed?style={{marginLeft: 80}}:style={{marginLeft: 200}}}
-                    style={
-                      {
-                        // padding: 24,
-                        // textAlign: 'center',
-                        // position:"absolute",
-                        // left:"13%",
-                        // top:"2%",
-                        // width:"85%"
-                        // marginLeft: 200,
-                        // padding:'10px',
-                      }
+                  // display:"flex",
+                  // flexDirection:"column"
+                  paddingLeft: 10,
+                }}
+              >
+                <div
+                  className={collapsed ? "ml-[80px]" : "ml-[200px]"}
+                  style={
+                    {
+                      // padding: 24,
+                      // textAlign: 'center',
+                      // position:"absolute",
+                      // left:"13%",
+                      // top:"2%",
+                      // width:"85%"
+                      // marginLeft: 200,
+                      // padding:'10px',
                     }
-                  >
-                    {children}
+                  }
+                >
 
-                    <Footer
-                      style={{
-                        // textAlign: 'center',
-                        marginLeft: 200,
-                      }}
-                    ></Footer>
-                  </div>
-                </Content>
-              </Layout>
+                  {children}
+
+                  <Footer
+                    style={{
+                      // textAlign: 'center',
+                      marginLeft: 200,
+                    }}
+                  ></Footer>
+                </div>
+              </Content>
             </Layout>
-          </Provider>
-        </body>
-      </html>
-    );
-  }
-  else{
-    router.push('/')
-    return null
-  }
+          </Layout>
+        </Provider>
+      </body>
+    </html>
+  );
+  //   } else {
+  //     router.push("/onboarding");
+  //     return null;
+  //   }
+  // } else {
+  //   router.push("/");
+  //   return null;
+  // }
 }
+
+// /hrms

@@ -10,10 +10,24 @@ import {
 } from "antd";
 import dayjs from "dayjs";
 
-const profile1 = ({ step, setStep }) => {
+import {  useSelector } from "react-redux";
+
+
+
+
+const Profile1 = ({ step, setStep }) => {
   const onChange = (e) => {
     console.log("radio checked", e.target.value);
   };
+
+  const {id, work_email, number} = useSelector((state)=>state.SendpersonalDetails.personalDetails)
+  
+
+  console.log(id, work_email, number)
+
+
+
+
   return (
     <>
       <div className="">
@@ -32,6 +46,7 @@ const profile1 = ({ step, setStep }) => {
                 onChange={() => {
                   if (step == 4) setStep(1);
                   else setStep(step + 1);
+
                 }}
               >
                 Immediately
@@ -90,4 +105,4 @@ const profile1 = ({ step, setStep }) => {
   );
 };
 
-export default profile1;
+export default Profile1;

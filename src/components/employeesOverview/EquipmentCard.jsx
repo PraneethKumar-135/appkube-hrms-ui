@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 
 const EquipmentCard = () => {
-    const details = useSelector((state) => state.EquipmentDetails);
+    const details = useSelector((state) => state.Equipment);
     const organizationDetails = details.organization
     const workerDetails = details.worker
 
