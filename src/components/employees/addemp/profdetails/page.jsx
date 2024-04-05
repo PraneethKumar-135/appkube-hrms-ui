@@ -82,7 +82,7 @@ const ProfessionalInfo = ({ tab, setTab }) => {
       uan: values.uanNumber,
       department_id: 5,
       // reporting_manager_id: values.selectedReportingMngr,
-      reporting_manager_id: "61a6b732-1597-444a-afcc-10eeafbacc63",
+      reporting_manager_id: "9c9291d7-b202-429d-b5b7-b04a9efc1ab9",
       work_location: values.selectedworkLocation,
       start_date: values.selectedDate,
       emp_id: id,

@@ -49,40 +49,6 @@ const Equipments = ({ tab, setTab }) => {
   };
 
 
-  // const StoreEquipment = async () => {
-  //   let data =
-  //   {
-  //     "owner": owner,
-  //     "device_type_id": 1,
-  //     "manufacturer": Manufacturer,
-  //     "serial_number": SerialNumber,
-  //     "note": Notes,
-  //     "supply_date": supplydate,
-  //     "emp_id": "fd7cbfe2-167c-4f7d-98ca-d4c778721d6e"
-
-  //   }
-  //   console.log(data)
-
-  //   try {
-  //     console.log("stored data:", data)
-  //     const response = await axios.put("/employee/equipmentInfo", JSON.stringify(data), {
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     });
-  //     console.log("response", response);
-  //     console.log("response", response);
-  //     if (response.status === 200) {
-  //       console.log("response data", response.data)
-
-  //       setTab(tab + 1)
-  //     }
-  //   }
-  //   catch (error) {
-  //     console.log('error', error)
-  //   }
-  // }
-
   const sendData = () => {
     const data = {
       owner: owner,
@@ -90,11 +56,10 @@ const Equipments = ({ tab, setTab }) => {
       Manufacturer: Manufacturer,
       SerialNumber: SerialNumber,
       Notes: Notes,
-      Date: supplydate
+      Date: supplydate 
     }
     console.log(data)
     dispatch(AddEquipment(data))
-
   }
 
   const handledelete = (id) => {
@@ -102,10 +67,33 @@ const Equipments = ({ tab, setTab }) => {
     dispatch(deleteequipement(id))
   }
   const [formState, setformstate] = useState();
+  const [formStateData, setformstateData] = useState({});
   const handleedit = (data) => {
     setformstate(data)
+    console.log("HandleEditData", data)
   }
   console.log(formState)
+
+
+
+  useEffect(() => {
+    console.log("useEffect Running");
+    if (formState) {
+      const matchingItem = organizationDetails.find(item => item.SerialNumber === formState);
+      if (matchingItem) {
+        setformstateData({
+          owner: matchingItem.owner,
+          Device: matchingItem.Device,
+          Manufacturer: matchingItem.Manufacturer,
+          SerialNumber: matchingItem.SerialNumber,
+          Notes: matchingItem.Notes,
+          Date: matchingItem.Date
+        });
+      }
+    }
+  }, [formState, organizationDetails]);
+
+  console.log(formStateData)
 
 
   const callApi = async () => {
@@ -241,7 +229,7 @@ const Equipments = ({ tab, setTab }) => {
                 name="devicetype"
                 type="text"
                 placeholder="Laptop"
-                // value={formState.Device}
+                value={formStateData.Device}
                 onChange={(e) => {
                   setDevice(e.target.value)
                 }}
@@ -261,7 +249,7 @@ const Equipments = ({ tab, setTab }) => {
                 name="manufacturerName"
                 type="text"
                 placeholder="Hp Laptop"
-                // value={formState.manufacturerName}
+                value={formStateData.Manufacturer}
                 onChange={(e) => {
                   setManufacturer(e.target.value);
                 }}
@@ -281,7 +269,7 @@ const Equipments = ({ tab, setTab }) => {
                 name="serialnumber"
                 type="text"
                 placeholder="First Name"
-                // value={formState.serialnumber}
+                value={formStateData.SerialNumber}
                 onChange={(e) => {
                   setSerialNumber(e.target.value);
                 }}
@@ -300,7 +288,7 @@ const Equipments = ({ tab, setTab }) => {
                 name="notes"
                 placeholder="Design"
                 rows={4}
-                // value={formState.notes}
+                value={formStateData.Notes}
                 onChange={(e) => {
                   setNotes(e.target.value);
                 }}
@@ -320,7 +308,7 @@ const Equipments = ({ tab, setTab }) => {
                   name="supplyDate"
                   className="border flex-1 hover:border-sky-600 ml-2 mb-2"
                   placeholder="Select date"
-                  // value={formState.supplyDate}
+                  // value={project.supplyDate}
                   onChange={handleDateChange}
                 />
               </div>
@@ -363,9 +351,7 @@ const Equipments = ({ tab, setTab }) => {
       >
         <div className="">
           {(organizationDetails) ? (
-
             organizationDetails.map((data, index) => (
-              console.log(data),
               <div className="flex flex-col gap-5 mt-5" key={index}>
                 {index === index && (
                   <div>
@@ -409,6 +395,7 @@ const Equipments = ({ tab, setTab }) => {
                       type="editbtn"
                       className="text-black rounded-none mt-3  h-8 w-24 flex items-center hover:text-blue-600 hover:border-blue-600 border-gray-300 font-semibold text-base"
                       icon={<EditOutlined />}
+                      onClick={() => handleedit(data.SerialNumber)}
                     >
                       Edit
                     </Button>

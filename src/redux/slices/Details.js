@@ -5,6 +5,7 @@ const initialState = {
   professionalDetails: [],
   equipDetails: [],
   documentDetails: [],
+  documentFullDetails: [],
   id: "",
   tab: false
 };
@@ -31,6 +32,15 @@ export const formSlice = createSlice({
     setTabs: (state, action) => {
       state.tab = action.payload
       console.log("setTab", action.payload)
+    },
+    setdocumentFullDetails: (state, action) => {
+      state.documentFullDetails = action.payload
+    },
+    deletedocumentFullDetails: (state, action) => {
+      const { payload } = action;
+      state.documentFullDetails = state.documentFullDetails.filter(
+        (item) => item.url !== payload
+      );
     }
   },
 });
@@ -39,7 +49,9 @@ export const { setpersonalDetails } = formSlice.actions;
 export const { setprofessionalDetails } = formSlice.actions;
 export const { setequipDetails } = formSlice.actions;
 export const { setdocumentDetails } = formSlice.actions;
+export const { setdocumentFullDetails } = formSlice.actions;
 export const { setId } = formSlice.actions;
 export const { setTabs } = formSlice.actions;
+export const { deletedocumentFullDetails } = formSlice.actions;
 
 export default formSlice.reducer;
